@@ -122,7 +122,7 @@ function setupSchema(PDO $conn) {
 
     $sql = "CREATE TABLE IF NOT EXISTS cart (
         id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES users(id) ON DELETE CASCADE,
+        user_id VARCHAR(255) NOT NULL,
         product_id INT REFERENCES products(id) ON DELETE CASCADE,
         quantity INT DEFAULT 1,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -131,9 +131,13 @@ function setupSchema(PDO $conn) {
 
     $sql = "CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES users(id) ON DELETE CASCADE,
-        total_price DECIMAL(10, 2) NOT NULL,
+        user_id VARCHAR(255) NOT NULL,
+        total DECIMAL(10, 2) NOT NULL,
         status VARCHAR(50) DEFAULT 'pending',
+        customer_name VARCHAR(255),
+        customer_phone VARCHAR(50),
+        customer_email VARCHAR(255),
+        delivery_address TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
     $conn->exec($sql);
@@ -184,7 +188,7 @@ try {
         resetProductsDatabase($conn);
         echo "<p>✅ Database reset to the default 11 products.</p>";
     } else {
-        ensureTables($conn);
+        setupSchema($conn);
         echo "<p>✅ Tables checked/created successfully</p>";
     }
     

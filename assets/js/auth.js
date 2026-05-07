@@ -34,6 +34,11 @@ function getCurrentUser() {
 
 function logoutUser() {
     saveAuthState({ isLoggedIn: false, user: null });
+    // Clear any client-side cart when logging out to avoid leaking cart between users
+    try {
+        localStorage.removeItem('compumart_cart');
+        if (typeof clearCart === 'function') clearCart();
+    } catch (e) {}
 }
 
 async function registerUser({ name, email, password }) {
@@ -89,6 +94,11 @@ async function registerUser({ name, email, password }) {
                 isLoggedIn: true,
                 user: result.user
             });
+            // Clear any existing client-side cart when a (new) user logs in
+            try {
+                localStorage.removeItem('compumart_cart');
+                if (typeof clearCart === 'function') clearCart();
+            } catch (e) {}
             return { success: true, user: result.user };
         } else {
             return { success: false, message: result.message || 'Registration failed.' };
@@ -152,6 +162,11 @@ async function loginUser({ email, password }) {
                 isLoggedIn: true,
                 user: result.user
             });
+            // Clear any existing client-side cart when a (new) user logs in
+            try {
+                localStorage.removeItem('compumart_cart');
+                if (typeof clearCart === 'function') clearCart();
+            } catch (e) {}
             return { success: true, user: result.user };
         } else {
             return { success: false, message: result.message || 'Login failed.' };

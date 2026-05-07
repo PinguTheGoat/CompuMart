@@ -93,6 +93,16 @@ if ($method === 'POST') {
         // Commit transaction
         $conn->commit();
         
+        // Clear user's server-side cart after successful order
+        try {
+            if (!empty($userId)) {
+                $clearStmt = $conn->prepare("DELETE FROM cart WHERE user_id = :user_id");
+                $clearStmt->execute([':user_id' => $userId]);
+            }
+        } catch (Exception $e) {
+            // Non-fatal: continue even if clearing cart fails
+        }
+
         sendJSON([
             'success' => true,
             'message' => 'Order created successfully.',

@@ -18,7 +18,22 @@ function getCartImagePath(path) {
 // Load cart from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
-    updateCartUI();
+    // If user is logged in, prefer server-side cart and sync
+    (async function syncIfLoggedIn() {
+        try {
+            if (typeof getCurrentUser === 'function') {
+                const user = getCurrentUser();
+                if (user && user.id) {
+                    await loadCartFromServer(String(user.id));
+                }
+            }
+        } catch (e) {
+            console.warn('[cart] failed to sync with server cart', e);
+        } finally {
+            updateCartUI();
+            setupCartEvents();
+        }
+    })();
     setupCartEvents();
 });
 
@@ -109,35 +124,64 @@ function addToCart(product, quantity = 1) {
     try {
         console.debug('[cart] addToCart called', { id: product && product.id, quantity });
     } catch (e) {}
-    const existingItem = cart.find(item => item.id === product.id);
-    
+    // Compare IDs loosely to handle string/number differences from DB/local data
+    const existingItem = cart.find(item => String(item.id) === String(product.id));
+
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
         cart.push({
             id: product.id,
             name: product.name,
-            price: product.price,
+            // Ensure price is numeric so UI helpers (toFixed) won't throw
+            price: Number(product.price) || 0,
             image: product.image,
-            quantity: quantity
+            quantity: Number(quantity) || 0
         });
     }
     
     saveCart();
     updateCartUI();
+    // If logged in, sync change to server
+    try {
+        if (typeof getCurrentUser === 'function') {
+            const user = getCurrentUser();
+            if (user && user.id) {
+                const apiPath = (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) ? API_BASE_URL + '/cart.php' : (window.location.pathname.includes('/pages/') ? '../api/cart.php' : 'api/cart.php');
+                fetch(apiPath, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: String(user.id), productId: product.id, quantity: Number(quantity) })
+                }).catch(err => console.warn('[cart] addToCart server sync failed', err));
+            }
+        }
+    } catch (e) {}
     
     // Show notification
     showCartNotification(`Added ${quantity}x ${product.name} to cart!`);
 }
 
 function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+    cart = cart.filter(item => String(item.id) !== String(productId));
     saveCart();
     updateCartUI();
+    try {
+        if (typeof getCurrentUser === 'function') {
+            const user = getCurrentUser();
+            if (user && user.id) {
+                const apiPath = (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) ? API_BASE_URL + '/cart.php' : (window.location.pathname.includes('/pages/') ? '../api/cart.php' : 'api/cart.php');
+                fetch(apiPath, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: String(user.id), productId: productId })
+                }).catch(err => console.warn('[cart] removeFromCart server sync failed', err));
+            }
+        }
+    } catch (e) {}
 }
 
 function updateQuantity(productId, newQuantity) {
-    const item = cart.find(item => item.id === productId);
+    const item = cart.find(item => String(item.id) === String(productId));
     
     if (item) {
         if (newQuantity <= 0) {
@@ -146,7 +190,42 @@ function updateQuantity(productId, newQuantity) {
             item.quantity = newQuantity;
             saveCart();
             updateCartUI();
+            try {
+                if (typeof getCurrentUser === 'function') {
+                    const user = getCurrentUser();
+                    if (user && user.id) {
+                        const apiPath = (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) ? API_BASE_URL + '/cart.php' : (window.location.pathname.includes('/pages/') ? '../api/cart.php' : 'api/cart.php');
+                        fetch(apiPath, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: String(user.id), productId: productId, quantity: Number(newQuantity) })
+                        }).catch(err => console.warn('[cart] updateQuantity server sync failed', err));
+                    }
+                }
+            } catch (e) {}
         }
+    }
+}
+
+// Load cart data from server for a given user ID and replace local cart
+async function loadCartFromServer(userId) {
+    try {
+        const apiPath = (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) ? API_BASE_URL + '/cart.php' : (window.location.pathname.includes('/pages/') ? '../api/cart.php' : 'api/cart.php');
+        const resp = await fetch(apiPath + '?userId=' + encodeURIComponent(userId));
+        if (!resp.ok) throw new Error('Failed to fetch server cart');
+        const serverItems = await resp.json();
+        if (!Array.isArray(serverItems)) return;
+        // Map server structure to local cart format
+        cart = serverItems.map(it => ({
+            id: it.product_id ?? it.productId ?? it.id,
+            name: it.name || it.product_name || '',
+            price: Number(it.price) || 0,
+            image: it.image || '',
+            quantity: Number(it.quantity) || 0
+        }));
+        saveCart();
+    } catch (e) {
+        console.warn('[cart] loadCartFromServer error', e);
     }
 }
 

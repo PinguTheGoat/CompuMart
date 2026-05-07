@@ -5,12 +5,18 @@
 (function() {
     'use strict';
     
-    // Skip auth check for account/login/signup pages
+    // Only enforce auth on explicitly protected pages (e.g. checkout)
     const currentPath = window.location.pathname.toLowerCase();
-    if (currentPath.includes('account.html') || 
-        currentPath.includes('login.html') || 
-        currentPath.includes('signup.html')) {
-        return; // Don't redirect these pages
+    const protectedPaths = [
+        'checkout.html',
+        '/checkout',
+        '/pages/checkout.html'
+    ];
+
+    // Skip if current page is not in protectedPaths
+    const isProtected = protectedPaths.some(p => currentPath.includes(p));
+    if (!isProtected) {
+        return; // allow browsing freely
     }
     
     function redirectToAccount() {
@@ -35,7 +41,7 @@
         }
     }
     
-    // Quick check via localStorage first
+    // Quick check via localStorage first (fast path)
     try {
         const authData = localStorage.getItem('compumart_auth');
         if (!authData) {
