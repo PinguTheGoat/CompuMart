@@ -77,44 +77,101 @@
         </div>
     </section>
 
-    <section class="page-content">
-        <div class="container" id="adminPanel" style="display: none;">
-            <h2 class="title">Admin Panel – Manage Products</h2>
-            <form id="adminProductForm" class="account-form">
-                <div class="form-group">
-                    <label for="productName">Product Name</label>
-                    <input type="text" id="productName" name="productName" required>
+    <section class="page-content" id="accountDashboardSection" style="display: none;">
+        <div class="container account-layout">
+            <div class="account-column">
+                <div class="account-form account-panel">
+                    <h2 class="title" style="margin-bottom: 12px;">Profile Details</h2>
+                    <p class="account-hint" id="profileSummary">Review and update your saved account details.</p>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="profileName">Full Name</label>
+                            <input type="text" id="profileName" name="profileName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">Email Address</label>
+                            <input type="email" id="profileEmail" name="profileEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePhone">Phone Number</label>
+                            <input type="text" id="profilePhone" name="profilePhone" placeholder="Optional">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileAddress">Address</label>
+                            <textarea id="profileAddress" name="profileAddress" rows="4" placeholder="Optional"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Save Profile</button>
+                        <p class="account-hint" id="profileMessage" style="margin-top: 10px;"></p>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="productPrice">Price (USD)</label>
-                    <input type="number" id="productPrice" name="productPrice" step="0.01" required>
+
+                <div class="account-form account-panel" style="margin-top: 24px;">
+                    <h2 class="title" style="margin-bottom: 12px;">Change Password</h2>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Update Password</button>
+                        <p class="account-hint" id="passwordMessage" style="margin-top: 10px;"></p>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="productImage">Image URL (optional)</label>
-                    <input type="text" id="productImage" name="productImage" placeholder="public/img/your-image.png">
+            </div>
+
+            <div class="account-column">
+                <div class="account-form account-panel">
+                    <h2 class="title" style="margin-bottom: 12px;">Transaction History</h2>
+                    <p class="account-hint">Review your past orders and payment totals.</p>
+                    <div id="orderHistoryList" class="order-history-list"></div>
                 </div>
-                <div class="form-group">
-                    <label for="productCategory">Category</label>
-                    <select id="productCategory" name="productCategory" required>
-                        <option value="cpu">CPU</option>
-                        <option value="gpu">GPU</option>
-                        <option value="ram">RAM</option>
-                        <option value="motherboard">Motherboard</option>
-                        <option value="ssd">SSD</option>
-                        <option value="powersupply">Power Supply</option>
-                        <option value="case">Case</option>
-                        <option value="monitor">Monitor</option>
-                        <option value="other">Other</option>
-                    </select>
+
+                <div class="account-form account-panel" id="adminPanel" style="display: none; margin-top: 24px;">
+                    <h2 class="title">Admin Panel – Manage Products</h2>
+                    <form id="adminProductForm" class="account-form" style="margin: 20px 0 0; padding: 0; box-shadow: none;">
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price (USD)</label>
+                            <input type="number" id="productPrice" name="productPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">Image URL (optional)</label>
+                            <input type="text" id="productImage" name="productImage" placeholder="public/img/your-image.png">
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Category</label>
+                            <select id="productCategory" name="productCategory" required>
+                                <option value="cpu">CPU</option>
+                                <option value="gpu">GPU</option>
+                                <option value="ram">RAM</option>
+                                <option value="motherboard">Motherboard</option>
+                                <option value="ssd">SSD</option>
+                                <option value="powersupply">Power Supply</option>
+                                <option value="case">Case</option>
+                                <option value="monitor">Monitor</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" name="productDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Add Product</button>
+                    </form>
+                    <div id="adminProductsList" class="account-form" style="margin-top: 20px;">
+                        <!-- Filled by auth.js with current custom products -->
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="productDescription">Description</label>
-                    <textarea id="productDescription" name="productDescription" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn">Add Product</button>
-            </form>
-            <div id="adminProductsList" class="account-form" style="margin-top: 20px;">
-                <!-- Filled by auth.js with current custom products -->
             </div>
         </div>
     </section>

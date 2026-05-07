@@ -3,6 +3,37 @@
 
 const AUTH_STORAGE_KEY = 'compumart_auth';
 
+function getApiPath(fileName) {
+    if (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) {
+        return API_BASE_URL + '/' + fileName;
+    }
+
+    const pathname = window.location.pathname;
+    if (pathname.includes('/pages/')) {
+        return '../api/' + fileName;
+    }
+
+    if (pathname.includes('/Website/')) {
+        return 'api/' + fileName;
+    }
+
+    return '/Website/api/' + fileName;
+}
+
+function normalizeUser(user) {
+    if (!user) return null;
+
+    return {
+        id: user.id,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        role: user.role || 'user',
+        created_at: user.created_at || ''
+    };
+}
+
 // Clear old localStorage custom products key (we now use database only)
 if (localStorage.getItem('compumart_custom_products')) {
     console.log('[AUTH] Clearing old localStorage custom products - using database only now');
@@ -19,7 +50,10 @@ function getAuthState() {
 }
 
 function saveAuthState(state) {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(state));
+    const nextState = Object.assign({}, state, {
+        user: normalizeUser(state && state.user)
+    });
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextState));
 }
 
 function isUserLoggedIn() {
@@ -29,7 +63,7 @@ function isUserLoggedIn() {
 
 function getCurrentUser() {
     const auth = getAuthState();
-    return auth.user || null;
+    return normalizeUser(auth.user);
 }
 
 function logoutUser() {
@@ -42,21 +76,7 @@ function logoutUser() {
 }
 
 async function registerUser({ name, email, password }) {
-    // Resolve API path: prefer global API_BASE_URL from `api-php.js` when available
-    let apiPath;
-    
-    if (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) {
-        apiPath = API_BASE_URL + '/auth.php';
-    } else {
-        const pathname = window.location.pathname;
-        if (pathname.includes('/pages/')) {
-            apiPath = '../api/auth.php';
-        } else if (pathname.includes('/Website/')) {
-            apiPath = 'api/auth.php';
-        } else {
-            apiPath = '/Website/api/auth.php';
-        }
-    }
+    const apiPath = getApiPath('auth.php');
     
     try {
         console.debug('[auth] register fetch URL:', apiPath);
@@ -111,21 +131,7 @@ async function registerUser({ name, email, password }) {
 }
 
 async function loginUser({ email, password }) {
-    // Resolve API path: prefer global API_BASE_URL from `api-php.js` when available
-    let apiPath;
-    
-    if (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) {
-        apiPath = API_BASE_URL + '/auth.php';
-    } else {
-        const pathname = window.location.pathname;
-        if (pathname.includes('/pages/')) {
-            apiPath = '../api/auth.php';
-        } else if (pathname.includes('/Website/')) {
-            apiPath = 'api/auth.php';
-        } else {
-            apiPath = '/Website/api/auth.php';
-        }
-    }
+    const apiPath = getApiPath('auth.php');
     
     try {
         console.debug('[auth] login fetch URL:', apiPath);
@@ -203,6 +209,114 @@ function requireLoginForPage() {
     }
 }
 
+async function fetchCurrentProfile(userId) {
+    const response = await fetch(getApiPath('auth.php'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'get_profile',
+            user_id: userId
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to load profile');
+    }
+
+    return await response.json();
+}
+
+async function saveProfile(userId, profile) {
+    const response = await fetch(getApiPath('auth.php'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'update_profile',
+            user_id: userId,
+            name: profile.name,
+            email: profile.email,
+            phone: profile.phone,
+            address: profile.address
+        })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to update profile');
+    }
+
+    return result;
+}
+
+async function changePassword(userId, currentPassword, newPassword) {
+    const response = await fetch(getApiPath('auth.php'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'change_password',
+            user_id: userId,
+            current_password: currentPassword,
+            new_password: newPassword
+        })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to change password');
+    }
+
+    return result;
+}
+
+async function loadOrderHistory(userId) {
+    const response = await fetch(getApiPath('orders.php') + '?user_id=' + encodeURIComponent(userId));
+
+    if (!response.ok) {
+        throw new Error('Failed to load transaction history');
+    }
+
+    const result = await response.json();
+    if (!result || !result.success) {
+        throw new Error((result && result.message) || 'Failed to load transaction history');
+    }
+
+    return result.orders || [];
+}
+
+function renderOrderHistory(container, orders) {
+    if (!container) return;
+
+    if (!orders || !orders.length) {
+        container.innerHTML = '<p class="account-hint" style="margin-top: 12px;">No completed transactions yet.</p>';
+        return;
+    }
+
+    container.innerHTML = orders.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemSummary = items.map(item => `${item.product_name || 'Item'} x${item.quantity}`).join(', ');
+
+        return `
+            <article class="order-history-item">
+                <div class="order-history-header">
+                    <div>
+                        <strong>Order #${order.id}</strong>
+                        <p>${new Date(order.created_at).toLocaleString()}</p>
+                    </div>
+                    <div class="order-history-total">$${Number(order.total).toFixed(2)}</div>
+                </div>
+                <p><strong>Status:</strong> ${order.status || 'pending'}</p>
+                <p><strong>Items:</strong> ${itemSummary || 'No item details available'}</p>
+            </article>
+        `;
+    }).join('');
+}
+
 // Account page wiring
 document.addEventListener('DOMContentLoaded', async () => {
     const loginForm = document.getElementById('loginForm');
@@ -214,6 +328,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const accountTitle = document.getElementById('accountTitle');
     const accountActions = document.getElementById('accountActions');
     const authFormsSection = document.getElementById('authFormsSection');
+    const accountDashboardSection = document.getElementById('accountDashboardSection');
+    const profileForm = document.getElementById('profileForm');
+    const passwordForm = document.getElementById('passwordForm');
+    const profileMessage = document.getElementById('profileMessage');
+    const passwordMessage = document.getElementById('passwordMessage');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profilePhone = document.getElementById('profilePhone');
+    const profileAddress = document.getElementById('profileAddress');
+    const orderHistoryList = document.getElementById('orderHistoryList');
     const adminPanel = document.getElementById('adminPanel');
     const adminProductsList = document.getElementById('adminProductsList');
 
@@ -222,6 +346,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Show/hide login/signup forms based on auth status
     if (authFormsSection) {
         authFormsSection.style.display = isLoggedIn ? 'none' : 'block';
+    }
+
+    if (accountDashboardSection) {
+        accountDashboardSection.style.display = isLoggedIn ? 'block' : 'none';
     }
 
     // Show/hide navbar logout link on all pages
@@ -236,6 +364,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (accountTitle) accountTitle.textContent = 'My Account';
             accountStatus.textContent = 'Logged in as';
             accountUserName.textContent = user.name + (user.role === 'admin' ? ' (Admin)' : '');
+            if (profileName) profileName.value = user.name || '';
+            if (profileEmail) profileEmail.value = user.email || '';
+            if (profilePhone) profilePhone.value = user.phone || '';
+            if (profileAddress) profileAddress.value = user.address || '';
             if (accountActions) {
                 accountActions.innerHTML = '';
                 if (logoutBtn) logoutBtn.style.display = 'inline-block';
@@ -253,6 +385,38 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (adminPanel) {
         adminPanel.style.display = isCurrentUserAdmin() ? 'block' : 'none';
+    }
+
+    if (isLoggedIn) {
+        const user = getCurrentUser();
+        if (user && user.id) {
+            try {
+                const profileResponse = await fetchCurrentProfile(user.id);
+                if (profileResponse.success && profileResponse.user) {
+                    const mergedUser = Object.assign({}, user, profileResponse.user);
+                    saveAuthState({ isLoggedIn: true, user: mergedUser });
+                    if (profileName) profileName.value = mergedUser.name || '';
+                    if (profileEmail) profileEmail.value = mergedUser.email || '';
+                    if (profilePhone) profilePhone.value = mergedUser.phone || '';
+                    if (profileAddress) profileAddress.value = mergedUser.address || '';
+                    if (accountUserName) {
+                        accountUserName.textContent = mergedUser.name + (mergedUser.role === 'admin' ? ' (Admin)' : '');
+                    }
+                }
+            } catch (error) {
+                console.warn('[auth] profile refresh failed', error);
+            }
+
+            if (orderHistoryList) {
+                try {
+                    const orders = await loadOrderHistory(user.id);
+                    renderOrderHistory(orderHistoryList, orders);
+                } catch (error) {
+                    console.warn('[auth] order history load failed', error);
+                    orderHistoryList.innerHTML = '<p class="account-hint" style="margin-top: 12px;">Unable to load transaction history right now.</p>';
+                }
+            }
+        }
     }
 
     // Render admin products list if present and user is admin
@@ -331,6 +495,67 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isInPages = window.location.pathname.includes('/pages/');
             const indexPath = isInPages ? '../index.html' : 'index.html';
             window.location.href = indexPath;
+        });
+    }
+
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = getCurrentUser();
+            if (!user || !user.id) {
+                if (profileMessage) profileMessage.textContent = 'Please log in again to update your profile.';
+                return;
+            }
+
+            const profile = {
+                name: profileName ? profileName.value.trim() : '',
+                email: profileEmail ? profileEmail.value.trim() : '',
+                phone: profilePhone ? profilePhone.value.trim() : '',
+                address: profileAddress ? profileAddress.value.trim() : ''
+            };
+
+            try {
+                if (profileMessage) profileMessage.textContent = 'Saving profile changes...';
+                const result = await saveProfile(user.id, profile);
+                saveAuthState({ isLoggedIn: true, user: result.user });
+                if (profileMessage) profileMessage.textContent = result.message || 'Profile updated successfully.';
+                if (accountUserName) {
+                    accountUserName.textContent = result.user.name + (result.user.role === 'admin' ? ' (Admin)' : '');
+                }
+            } catch (error) {
+                if (profileMessage) profileMessage.textContent = error.message;
+            }
+        });
+    }
+
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = getCurrentUser();
+            if (!user || !user.id) {
+                if (passwordMessage) passwordMessage.textContent = 'Please log in again to change your password.';
+                return;
+            }
+
+            const currentPassword = passwordForm.querySelector('input[name="currentPassword"]').value.trim();
+            const newPassword = passwordForm.querySelector('input[name="newPassword"]').value.trim();
+            const confirmPassword = passwordForm.querySelector('input[name="confirmPassword"]').value.trim();
+
+            if (newPassword !== confirmPassword) {
+                if (passwordMessage) passwordMessage.textContent = 'New password and confirmation do not match.';
+                return;
+            }
+
+            try {
+                if (passwordMessage) passwordMessage.textContent = 'Updating password...';
+                const result = await changePassword(user.id, currentPassword, newPassword);
+                passwordForm.reset();
+                if (passwordMessage) passwordMessage.textContent = result.message || 'Password updated successfully.';
+            } catch (error) {
+                if (passwordMessage) passwordMessage.textContent = error.message;
+            }
         });
     }
 

@@ -65,10 +65,14 @@ function ensureTables($conn) {
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        address TEXT,
         role VARCHAR(20) DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
     $conn->exec($sql);
+    $conn->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50)");
+    $conn->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT");
     
     // Create cart table
     $sql = "CREATE TABLE IF NOT EXISTS cart (
