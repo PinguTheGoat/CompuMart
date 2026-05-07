@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - CompuMart</title>
+    <link rel="icon" type="image/png" href="../public/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../assets/js/auth-guard.js"></script>
+</head>
+<body class="sticky-footer">
+    <div class="navbar-wrapper">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="../index.html"><img src="../public/img/Logo.png" alt="CompuMart Logo"></a>
+                </div>
+                <nav>
+                    <ul id="Menuitems">
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="account.html">Account</a></li>
+                    </ul>
+                </nav>
+                <div class="cart-icon-wrapper" id="cartIconWrapper">
+                    <img src="../public/img/cart.png" alt="Shopping Cart" id="cartIcon" class="cart-icon">
+                    <span class="cart-count" id="cartCount"></span>
+                </div>
+                <a href="#" id="navLogout" class="nav-logout" style="display:none;">Logout</a>
+                <img src="../public/img/menu.png" alt="Menu Icon" class="menu-icon" onclick="menutoggle()">
+            </div>
+        </div>
+    </div>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>Have questions about a build or an order? Reach out and we’ll get back to you.</p>
+        </div>
+    </section>
+
+    <section class="page-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <h2>Send Us a Message</h2>
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <label for="contactName">Full Name</label>
+                            <input type="text" id="contactName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email</label>
+                            <input type="email" id="contactEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+                            <textarea id="contactMessage" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+                <div class="col-2">
+                    <h2>Store & Support</h2>
+                    <p><strong>Email:</strong> support@compumart.local</p>
+                    <p><strong>Facebook:</strong> CompuMart Official</p>
+                    <p><strong>Hours:</strong> Mon – Sat, 10:00 AM – 7:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and iOS mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="../public/img/play-store.png" alt="Play Store">
+                        <img src="../public/img/app-store.png" alt="App Store">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="../public/img/Logo.png" alt="CompuMart Logo">
+                    <p>Our Purpose Is To Sustainably Make the Pleasure and Benefits of Technology Accessible to the Many.</p>
+                </div>
+                <div class="footer-col-3">
+                    <h3>Useful Links</h3>
+                    <ul>
+                        <li>Coupons</li>
+                        <li>Blog Post</li>
+                        <li>Return Policy</li>
+                        <li>Join Affiliate</li>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow Us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>YouTube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">© 2025 CompuMart - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script src="../assets/js/api-php.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/cart.js"></script>
+</body>
+</html>
+
+

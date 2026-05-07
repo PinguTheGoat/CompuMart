@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - CompuMart</title>
+    <link rel="icon" type="image/png" href="../public/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="sticky-footer">
+    <div class="navbar-wrapper">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="../index.html"><img src="../public/img/Logo.png" alt="CompuMart Logo"></a>
+                </div>
+                <nav>
+                    <ul id="Menuitems">
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="account.html">Account</a></li>
+                    </ul>
+                </nav>
+                <div class="cart-icon-wrapper" id="cartIconWrapper" style="display: none;">
+                    <img src="../public/img/cart.png" alt="Shopping Cart" id="cartIcon" class="cart-icon">
+                    <span class="cart-count" id="cartCount"></span>
+                </div>
+                <img src="../public/img/menu.png" alt="Menu Icon" class="menu-icon" onclick="menutoggle()">
+            </div>
+        </div>
+    </div>
+
+    <section class="page-hero">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                <div style="flex: 1;">
+                    <h1 id="accountTitle">My Account</h1>
+                    <p id="accountStatus">Manage your profile and orders.</p>
+                    <p id="accountUserName" class="account-username"></p>
+                </div>
+                <div id="accountActions" style="margin-top: 10px; white-space: nowrap;">
+                    <button id="logoutBtn" class="btn" style="display: none; background: #e74c3c; padding: 10px 20px;">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Forward redirect query parameter (if present) to login/signup links
+        (function(){
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect');
+                if (!redirect) return;
+                const loginLink = document.querySelector('#authFormsSection a[href="login.html"]');
+                const signupLink = document.querySelector('#authFormsSection a[href="signup.html"]');
+                if (loginLink) loginLink.href = 'login.html?redirect=' + encodeURIComponent(redirect);
+                if (signupLink) signupLink.href = 'signup.html?redirect=' + encodeURIComponent(redirect);
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+
+    <!-- Auth CTA: link to dedicated login and signup pages -->
+    <section class="page-content" id="authFormsSection">
+        <div class="container">
+            <div style="text-align:center; max-width:700px; margin:40px auto;">
+                <h2 class="title">Access Your Account</h2>
+                <p style="color:#666; margin-top:10px;">Please log in or create an account to manage your profile and orders.</p>
+                <div style="display:flex; gap:12px; justify-content:center; margin-top:22px;">
+                    <a href="login.html" class="btn">Login</a>
+                    <a href="signup.html" class="btn">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-content">
+        <div class="container" id="adminPanel" style="display: none;">
+            <h2 class="title">Admin Panel – Manage Products</h2>
+            <form id="adminProductForm" class="account-form">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" name="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price (USD)</label>
+                    <input type="number" id="productPrice" name="productPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Image URL (optional)</label>
+                    <input type="text" id="productImage" name="productImage" placeholder="public/img/your-image.png">
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Category</label>
+                    <select id="productCategory" name="productCategory" required>
+                        <option value="cpu">CPU</option>
+                        <option value="gpu">GPU</option>
+                        <option value="ram">RAM</option>
+                        <option value="motherboard">Motherboard</option>
+                        <option value="ssd">SSD</option>
+                        <option value="powersupply">Power Supply</option>
+                        <option value="case">Case</option>
+                        <option value="monitor">Monitor</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea id="productDescription" name="productDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">Add Product</button>
+            </form>
+            <div id="adminProductsList" class="account-form" style="margin-top: 20px;">
+                <!-- Filled by auth.js with current custom products -->
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and iOS mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="../public/img/play-store.png" alt="Play Store">
+                        <img src="../public/img/app-store.png" alt="App Store">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="../public/img/Logo.png" alt="CompuMart Logo">
+                    <p>Our Purpose Is To Sustainably Make the Pleasure and Benefits of Technology Accessible to the Many.</p>
+                </div>
+                <div class="footer-col-3">
+                    <h3>Useful Links</h3>
+                    <ul>
+                        <li>Coupons</li>
+                        <li>Blog Post</li>
+                        <li>Return Policy</li>
+                        <li>Join Affiliate</li>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow Us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>YouTube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">© 2025 CompuMart - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script src="../assets/js/api-php.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/cart.js"></script>
+</body>
+</html>
+
+

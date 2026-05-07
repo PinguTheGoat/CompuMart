@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompuMart</title>
+    <link rel="icon" type="image/png" href="public/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="assets/js/auth-guard.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/index-gate.js"></script>
+</head>
+<body>
+    <div class="navbar-wrapper">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="#top"><img src="public/img/Logo.png" alt="CompuMart Logo"></a>
+                </div>
+                <nav>
+                    <ul id="Menuitems">
+                        <li><a href="#top">Home</a></li>
+                        <li><a href="pages/products.html">Products</a></li>
+                        <li><a href="pages/about.html">About</a></li>
+                        <li><a href="pages/contact.html">Contact</a></li>
+                        <li><a href="pages/account.html">Account</a></li>
+                    </ul>
+                </nav>
+                <div class="cart-icon-wrapper" id="cartIconWrapper">
+                    <img src="public/img/cart.png" alt="Shopping Cart" id="cartIcon" class="cart-icon">
+                    <span class="cart-count" id="cartCount"></span>
+                </div>
+                <a href="#" id="navLogout" class="nav-logout" style="display:none;">Logout</a>
+                <img src="public/img/menu.png" alt="Menu Icon" class="menu-icon" onclick="menutoggle()">
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <h1>CompuMart</h1>
+                    <p>Your one-stop shop for all things tech!<br>Explore our wide range of products and <br>find the perfect gadgets to suit your needs.</p>
+                    <a href="pages/products.html" class="btn">Shop Now &#x2794;</a>
+                </div>
+                <div class="col-2">
+                    <img src="public/img/hero-image.png" alt="Hero Image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="categories fade-in-left">
+        <div class="small-container">
+            <h2 class="title">New Arrivals</h2>
+            <div class="modern-carousel" id="arrivalCarousel">
+                <button class="carousel-btn prev" type="button" aria-label="Previous product" data-prev>&lsaquo;</button>
+                <div class="carousel-window">
+                    <div class="carousel-track" data-track>
+                        <div class="carousel-card">
+                            <img src="public/img/category-1.png" alt="AMD Ryzen 7 5700X3D Processor">
+                            <h4>AMD Ryzen 7 5700X3D Processor</h4>
+                            <p>$138.20</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-2.png" alt="Palit RTX 5090 GameRock OC 32GB">
+                            <h4>Palit RTX 5090 GameRock OC 32GB</h4>
+                            <p>$5,300.00</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-3.png" alt="Corsair Dominator Titanium DDR5 96GB">
+                            <h4>Corsair Dominator Titanium DDR5 96gb 24x24x24x24</h4>
+                            <p>$320.00</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-4.png" alt="SAMSUNG 980 M.2 PCIe NVMe 1TB SSD">
+                            <h4>SAMSUNG 980 M.2 PCIe NVMe 1TB SSD</h4>
+                            <p>$215.00</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-5.png" alt="Lian Li Edge Series-1000W PSU">
+                            <h4>Lian Li Edge Series-1000W Full Modular Power</h4>
+                            <p>$279.00</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-6.png" alt="GIGABYTE AORUS RTX 5080">
+                            <h4>GIGABYTE AORUS GeForce RTX 5080 Master ICE 16G Graphics Card</h4>
+                            <p>$1790.00</p>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="public/img/category-7.png" alt="Hyte Y70 Touch PC Case">
+                            <h4>Hyte Y70 Touch Infinite Dual Chamber ATX PC Case</h4>
+                            <p>$501.00</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn next" type="button" aria-label="Next product" data-next>&rsaquo;</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="scroll-video-section" id="scrollVideoSection">
+        <div class="scroll-video-container">
+            <video id="scrollVideo"
+            class="scroll-video"
+            muted
+            playsinline
+            preload="metadata">
+                <source src="public/img/5090Video.mp4" type="video/mp4">
+            </video>
+        </div>
+    </section>
+
+    <div class="small-container fade-in-left next-content" id="featuredProducts">
+        <h2 class="title">Featured Products</h2>
+        <div class="row">
+            <div class="col-4">
+                <img src="public/img/product-1.png" alt="product 1">
+                <h4>ASUS ROG Astral GeForce RTX5090 Dhahab OC Edition Graphic card</h4>
+                <p>$5,500.00</p>
+            </div>
+            <div class="col-4">
+                <img src="public/img/product-2.png" alt="product 2">
+                <h4>Asus Rog Crosshair X870e Extreme Motherboard</h4>
+                <p>$939.00</p>
+            </div>
+            <div class="col-4">
+                <img src="public/img/product-3.png" alt="product 3">
+                <h4>AMD Ryzen 9 9950X3D Processor</h4>
+                <p>$533.00</p>
+            </div>
+            <div class="col-4">
+                <img src="public/img/product-4.png" alt="product 4">
+                <h4>Benq Zowie Xl2586x+ 24 Full Hd Tn Led 600hz Gaming Monitor</h4>
+                <p>$1,300.00</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="offer fade-in-left">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-2">
+                    <img src="public/img/exclusive.png" alt="Exclusive Offer" class="offer-img">
+                </div>
+                <div class="col-2">
+                    <p>Exclusive Black Friday Offer!</p>
+                    <h1>Ultimate Gaming PC</h1>
+                    <small> AMD Ryzen 9 9950X3D Processor<br>
+                            Corsair Dominator Titanium DDR5 96gb 24x24x24x24<br>
+                            Palit RTX 5090 GameRock OC 32GB<br>
+                            Asus Rog Crosshair X870e Extreme Motherboard<br>
+                            Lian Li O11 Vision Compact Glass ATX Case<br>
+                            Benq Zowie Xl2586x+ 24 Full Hd Tn Led 600hz Gaming Monitor<br>
+                            TEAMGROUP T-FORCE GC PRO NVMe PCIe 5.0 M.2 Internal SSD<br>
+                            1200W Lian Li Edge ATX 3.1 Gold Modular PSU Black<br>
+                            Wooting 60HE+ Lekker Linear60 RGB Gaming Keyboard Black<br>
+                            Logitech Pro X Superlight 2 Se Wireless Gaming Mouse<br>
+                    </small>
+                    <br>
+                    <span><del class="discounted-price">$9,363.00</del> 10% off, now it's only $8426.00</span>
+                    <br>
+                    <a href="pages/products.html" class="btn">Buy Now &#x2794;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="component-categories fade-in-left">
+        <div class="small-container">
+            <h2 class="title">Component Categories</h2>
+            <div class="row">
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=cpu">
+                        <img src="public/img/category-1.png" alt="CPU">
+                        <h4>CPU</h4>
+                    </a>
+                </div>
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=gpu">
+                        <img src="public/img/category-2.png" alt="GPU">
+                        <h4>GPU</h4>
+                    </a>
+                </div>
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=ram">
+                        <img src="public/img/category-3.png" alt="RAM">
+                        <h4>RAM</h4>
+                    </a>
+                </div>
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=motherboard">
+                        <img src="public/img/product-2.png" alt="Motherboard">
+                        <h4>MOTHERBOARD</h4>
+                    </a>
+                </div>
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=ssd">
+                        <img src="public/img/category-4.png" alt="SSD">
+                        <h4>SSD</h4>
+                    </a>
+                </div>
+                <div class="col-3 component-category">
+                    <a href="pages/products.html?category=powersupply">
+                        <img src="public/img/category-5.png" alt="Power Supply">
+                        <h4>POWER SUPPLY</h4>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="newsletter fade-in-left">
+        <div class="small-container">
+            <h2 class="newsletter-title">Stay in Touch</h2>
+            <p class="newsletter-description">Be the first to know about new collections and exclusive offers</p>
+            <form class="newsletter-form">
+                <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                <button type="submit" class="newsletter-btn">Subscribe</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="brands fade-in-left">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-5">
+                    <img src="public/img/logo-gigabyte.png" alt="Gigabyte Logo">
+                </div>
+                <div class="col-5">
+                    <img src="public/img/logo-asus.png" alt="Asus Logo">
+                </div>
+                <div class="col-5">
+                    <img src="public/img/logo-msi.png" alt="MSI Logo">
+                </div>
+                <div class="col-5">
+                    <img src="public/img/logo-corsair.png" alt="Corsair Logo">
+                </div>
+                <div class="col-5">
+                    <img src="public/img/logo-logitech.png" alt="Logitech Logo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and iOS mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="public/img/play-store.png" alt="Play Store">
+                        <img src="public/img/app-store.png" alt="App Store">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="public/img/Logo.png" alt="CompuMart Logo">
+                    <p>Our Purpose Is To Sustainably Make the Pleasure and Benefits of Technology Accessible to the Many.</p>
+                </div>
+                <div class="footer-col-3">
+                    <h3>Useful Links</h3>
+                    <ul>
+                        <li>Coupons</li>
+                        <li>Blog Post</li>
+                        <li>Return Policy</li>
+                        <li>Join Affiliate</li>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow Us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>YouTube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">© 2025 CompuMart - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Shopping Cart</h2>
+            <button class="cart-close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty">
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-total">
+                <strong>Total: <span id="cartTotal">$0.00</span></strong>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <script src="assets/js/api-php.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/cart.js"></script>
+</body>
+</html>

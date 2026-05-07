@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - CompuMart</title>
+    <link rel="icon" type="image/png" href="../public/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="sticky-footer">
+    <div class="navbar-wrapper">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="../index.html"><img src="../public/img/Logo.png" alt="CompuMart Logo"></a>
+                </div>
+                <nav>
+                    <ul id="Menuitems">
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="account.html">Account</a></li>
+                    </ul>
+                </nav>
+                <div class="cart-icon-wrapper" id="cartIconWrapper">
+                    <img src="../public/img/cart.png" alt="Shopping Cart" id="cartIcon" class="cart-icon">
+                    <span class="cart-count" id="cartCount"></span>
+                </div>
+                <a href="#" id="navLogout" class="nav-logout" style="display:none;">Logout</a>
+                <img src="../public/img/menu.png" alt="Menu Icon" class="menu-icon" onclick="menutoggle()">
+            </div>
+        </div>
+    </div>
+
+    <main class="checkout-page">
+        <div class="container">
+            <h1 class="checkout-title">Checkout</h1>
+
+            <div class="checkout-layout">
+                <section class="checkout-card">
+                    <h2>Customer Information</h2>
+                    <form id="checkoutForm" class="checkout-form">
+                        <div class="form-group">
+                            <label for="fullName">Full Name <span>*</span></label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number <span>*</span></label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email (Optional)</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryAddress">Delivery Address <span>*</span></label>
+                            <textarea id="deliveryAddress" name="deliveryAddress" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="checkout-card">
+                    <h2>Order Summary</h2>
+                    <div id="orderItems" class="order-items">
+                        <!-- Filled by checkout.js -->
+                    </div>
+                    <div class="order-total">
+                        <span>Total Amount</span>
+                        <span id="orderTotal">$0.00</span>
+                    </div>
+                </section>
+            </div>
+
+            <button id="placeOrderBtn" class="place-order-btn">Place Order</button>
+            <p class="checkout-note">
+                Note: This will generate a receipt for you to screenshot and send to our Facebook page.
+            </p>
+
+            <section id="receiptSection" class="receipt-section" style="display: none;">
+                <h2>Order Receipt</h2>
+                <p id="receiptMessage"></p>
+                <div id="receiptDetails"></div>
+            </section>
+        </div>
+    </main>
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and iOS mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="../public/img/play-store.png" alt="Play Store">
+                        <img src="../public/img/app-store.png" alt="App Store">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="../public/img/Logo.png" alt="CompuMart Logo">
+                    <p>Our Purpose Is To Sustainably Make the Pleasure and Benefits of Technology Accessible to the Many.</p>
+                </div>
+                <div class="footer-col-3">
+                    <h3>Useful Links</h3>
+                    <ul>
+                        <li>Coupons</li>
+                        <li>Blog Post</li>
+                        <li>Return Policy</li>
+                        <li>Join Affiliate</li>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow Us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>YouTube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">© 2025 CompuMart - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script src="../assets/js/api-php.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/auth-guard.js"></script>
+    <script src="../assets/js/cart.js"></script>
+    <script src="../assets/js/checkout.js"></script>
+</body>
+</html>
+
+
