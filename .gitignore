@@ -1,0 +1,13 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Flutter build artifacts
+compumart_mobile/build/
+compumart_mobile/.dart_tool/
+compumart_mobile/.flutter-plugins-dependencies
