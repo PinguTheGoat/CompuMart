@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/product.dart';
 import '../services/product_service.dart';
 import '../widgets/clay_container.dart';
@@ -86,13 +87,24 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        // 3. COLUMN WIDGET
-        // Properties: crossAxisAlignment, mainAxisAlignment, children
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: RefreshIndicator(
+        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F172A),
+        backgroundColor: cardBg,
+        onRefresh: () async {
+          HapticFeedback.lightImpact();
+          await Future.delayed(const Duration(milliseconds: 650));
+          if (mounted) {
+            setState(() {});
+          }
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+          // 3. COLUMN WIDGET
+          // Properties: crossAxisAlignment, mainAxisAlignment, children
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // SEARCH BOX WITH CLAY EMBOSSING
             // 4. CONTAINER WIDGET
             ClayContainer(
@@ -201,13 +213,13 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0F766E).withAlpha(isDark ? 50 : 25),
+                    color: (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E)).withAlpha(isDark ? 40 : 25),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Direct Inventory',
                     style: TextStyle(
-                      color: Color(0xFF0F766E),
+                      color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E),
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -222,7 +234,7 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
             products.isEmpty
                 ? Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(40.0),
+                      padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: [
                           Icon(Icons.inventory_2_outlined, size: 44, color: mutedColor),
@@ -230,6 +242,24 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
                           Text(
                             'No hardware components match your search.',
                             style: TextStyle(color: mutedColor, fontSize: 13),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              searchController.clear();
+                              setState(() {
+                                searchQuery = '';
+                                selectedCategory = 'All';
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDark ? const Color(0xFF282C38) : const Color(0xFFF1F5F9),
+                              foregroundColor: textColor,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('Reset Search & Filters', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                           ),
                         ],
                       ),
@@ -255,7 +285,8 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildProductClayCard(
@@ -354,18 +385,40 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
               // 10. ELEVATEDBUTTON WIDGET
               // Properties: onPressed, style, child
               SizedBox(
-                width: 32,
-                height: 32,
+                width: 36,
+                height: 36,
                 child: ElevatedButton(
                   onPressed: () {
                     widget.onAddToCart(product);
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Added ${product.name} to cart'),
-                        duration: const Duration(seconds: 1),
-                        backgroundColor: isDark ? const Color(0xFF1E212A) : const Color(0xFF0F172A),
+                        duration: const Duration(seconds: 2),
+                        backgroundColor: isDark ? const Color(0xFF282C38) : const Color(0xFF0F172A),
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        content: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle_rounded,
+                              color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF4ADE80),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Added "${product.name}" to cart',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -375,7 +428,7 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
                     padding: EdgeInsets.zero,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Icon(Icons.add, size: 18),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/product.dart';
 import 'models/cart_item.dart';
+import 'models/order_record.dart';
 import 'screens/home_screen.dart';
 import 'screens/warehouse_screen.dart';
 import 'screens/cart_screen.dart';
@@ -42,17 +43,37 @@ class _CompuMartAppState extends State<CompuMartApp> {
         ),
         fontFamily: 'SF-Pro',
         useMaterial3: true,
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: const Color(0xFF0F172A),
+          contentTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF111318),
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF38BDF8),
-          secondary: Color(0xFF0F766E),
+          secondary: Color(0xFF2DD4BF),
           surface: Color(0xFF1E212A),
         ),
         fontFamily: 'SF-Pro',
         useMaterial3: true,
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: const Color(0xFF282C38),
+          contentTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
       ),
       home: MainNavigationShell(
         isDark: _isDark,
@@ -79,6 +100,13 @@ class MainNavigationShell extends StatefulWidget {
 class _MainNavigationShellState extends State<MainNavigationShell> {
   int _currentIndex = 0;
   final List<CartItem> _cartItems = [];
+  final List<OrderRecord> _orders = [];
+
+  void _handleOrderPlaced(OrderRecord order) {
+    setState(() {
+      _orders.insert(0, order);
+    });
+  }
 
   void _addToCart(Product product) {
     setState(() {
@@ -151,10 +179,17 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         onDecrement: _decrementCartItem,
         onRemove: _removeCartItem,
         onClearCart: _clearCart,
+        onExploreWarehouse: () {
+          setState(() {
+            _currentIndex = 1;
+          });
+        },
+        onOrderPlaced: _handleOrderPlaced,
       ),
       SettingsScreen(
         isDark: isDark,
         onToggleTheme: widget.onToggleTheme,
+        orders: _orders,
       ),
     ];
 

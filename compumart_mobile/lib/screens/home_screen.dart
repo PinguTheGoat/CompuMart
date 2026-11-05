@@ -229,10 +229,10 @@ class HomeScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: onNavigateToWarehouse,
-                  child: const Text(
+                  child: Text(
                     'See All →',
                     style: TextStyle(
-                      color: Color(0xFF0F766E),
+                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F766E),
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),

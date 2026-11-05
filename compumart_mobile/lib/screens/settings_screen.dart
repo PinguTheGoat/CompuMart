@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import '../models/order_record.dart';
 import '../widgets/clay_container.dart';
 import '../widgets/theme_swipe_button.dart';
 
 class SettingsScreen extends StatelessWidget {
   final bool isDark;
   final ValueChanged<bool> onToggleTheme;
+  final List<OrderRecord> orders;
 
   const SettingsScreen({
     super.key,
     required this.isDark,
     required this.onToggleTheme,
+    this.orders = const [],
   });
 
   @override
@@ -91,13 +94,13 @@ class SettingsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F766E).withAlpha(isDark ? 50 : 25),
+                            color: (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E)).withAlpha(isDark ? 40 : 25),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Warehouse Verified Account',
                             style: TextStyle(
-                              color: Color(0xFF0F766E),
+                              color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E),
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
                             ),
@@ -184,54 +187,143 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ClayContainer(
-              borderRadius: 22,
-              surfaceColor: cardBg,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Dispatch Order #CM-7419',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: textColor),
-                      ),
-                      const Text(
-                        'In Transit',
-                        style: TextStyle(
-                          color: Color(0xFF0F766E),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 11,
+            if (orders.isEmpty)
+              ClayContainer(
+                borderRadius: 22,
+                surfaceColor: cardBg,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Dispatch Order #CM-7419',
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: textColor),
+                        ),
+                        Text(
+                          'In Transit',
+                          style: TextStyle(
+                            color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Direct courier delivery from Central Warehouse facility with foam-cushioned packaging.',
+                      style: TextStyle(color: mutedColor, fontSize: 12, height: 1.4),
+                    ),
+                    const SizedBox(height: 10),
+                    // 8. PLACEHOLDER WIDGET
+                    // Properties: fallbackHeight, fallbackWidth, color, strokeWidth
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 40,
+                        child: Placeholder(
+                          fallbackHeight: 40,
+                          fallbackWidth: double.infinity,
+                          color: isDark ? const Color(0xFF282C38) : const Color(0xFFE2E8F0),
+                          strokeWidth: 1.0,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Direct courier delivery from Central Warehouse facility with foam-cushioned packaging.',
-                    style: TextStyle(color: mutedColor, fontSize: 12, height: 1.4),
-                  ),
-                  const SizedBox(height: 10),
-                  // 8. PLACEHOLDER WIDGET
-                  // Properties: fallbackHeight, fallbackWidth, color, strokeWidth
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: Placeholder(
-                        fallbackHeight: 40,
-                        fallbackWidth: double.infinity,
-                        color: isDark ? const Color(0xFF282C38) : const Color(0xFFE2E8F0),
-                        strokeWidth: 1.0,
+                    ),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: orders.map((order) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: ClayContainer(
+                      borderRadius: 22,
+                      surfaceColor: cardBg,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Order #${order.orderId}',
+                                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: textColor),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF16A34A).withAlpha(isDark ? 50 : 25),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  order.status,
+                                  style: TextStyle(
+                                    color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Recipient: ${order.recipient} (${order.phone})',
+                            style: TextStyle(color: textColor, fontWeight: FontWeight.w600, fontSize: 12),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Address: ${order.address}',
+                            style: TextStyle(color: mutedColor, fontSize: 12),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Method: ${order.paymentMethod}',
+                                style: TextStyle(color: mutedColor, fontSize: 11),
+                              ),
+                              Text(
+                                '\$${order.total.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F172A),
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // 8. PLACEHOLDER WIDGET
+                          // Properties: fallbackHeight, fallbackWidth, color, strokeWidth
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 36,
+                              child: Placeholder(
+                                fallbackHeight: 36,
+                                fallbackWidth: double.infinity,
+                                color: isDark ? const Color(0xFF282C38) : const Color(0xFFE2E8F0),
+                                strokeWidth: 1.0,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
-            ),
 
             const SizedBox(height: 20),
 
@@ -318,12 +410,35 @@ class SettingsScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('CompuMart Direct Warehouse Cloud v1.0 connected'),
-                            backgroundColor: isDark ? const Color(0xFF1E212A) : const Color(0xFF0F172A),
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: isDark ? const Color(0xFF282C38) : const Color(0xFF0F172A),
                             behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            content: Row(
+                              children: [
+                                Icon(
+                                  Icons.cloud_done_rounded,
+                                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF4ADE80),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    'CompuMart Direct Warehouse Cloud v1.0 connected',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

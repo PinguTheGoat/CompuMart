@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/product.dart';
 import '../widgets/clay_container.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final Product product;
   final VoidCallback onAddToCart;
 
@@ -13,11 +14,34 @@ class ProductDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  int _quantity = 1;
+
+  void _increment() {
+    if (_quantity < widget.product.stock) {
+      HapticFeedback.selectionClick();
+      setState(() => _quantity++);
+    }
+  }
+
+  void _decrement() {
+    if (_quantity > 1) {
+      HapticFeedback.selectionClick();
+      setState(() => _quantity--);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final mutedColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
     final cardBg = isDark ? const Color(0xFF1E212A) : Colors.white;
+    final product = widget.product;
+    final totalPrice = product.price * _quantity;
 
     // 1. SCAFFOLD WIDGET
     // Properties: appBar, body, bottomNavigationBar, backgroundColor
@@ -41,6 +65,23 @@ class ProductDetailScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         iconTheme: IconThemeData(color: textColor),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share_outlined, size: 20, color: textColor),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Sharing link for ${product.name}'),
+                  duration: const Duration(seconds: 1),
+                  backgroundColor: isDark ? const Color(0xFF1E212A) : const Color(0xFF0F172A),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
@@ -87,18 +128,18 @@ class ProductDetailScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0F766E).withAlpha(isDark ? 50 : 25),
+                    color: (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E)).withAlpha(isDark ? 40 : 25),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       // 9. ICONS WIDGET
-                      Icon(Icons.verified_outlined, size: 15, color: Color(0xFF0F766E)),
-                      SizedBox(width: 5),
+                      Icon(Icons.verified_outlined, size: 15, color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E)),
+                      const SizedBox(width: 5),
                       Text(
                         'Direct Warehouse Deal',
                         style: TextStyle(
-                          color: Color(0xFF0F766E),
+                          color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF0F766E),
                           fontWeight: FontWeight.w700,
                           fontSize: 11,
                         ),
@@ -159,12 +200,12 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'In Stock • Ready to Dispatch',
+                Text(
+                  '${product.stock} units in warehouse',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF16A34A),
+                    color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
                   ),
                 ),
               ],
@@ -216,13 +257,13 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 90),
+            const SizedBox(height: 110),
           ],
         ),
       ),
-      // FLOATING ACTION BAR
+      // FLOATING ACTION BAR WITH STEPPER & ADD TO CART
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
           color: cardBg,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -237,18 +278,81 @@ class ProductDetailScreen extends StatelessWidget {
         child: SafeArea(
           child: Row(
             children: [
+              // QUANTITY STEPPER
+              Container(
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF282C38) : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove, size: 18, color: textColor),
+                      onPressed: _decrement,
+                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      padding: EdgeInsets.zero,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        '$_quantity',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: textColor,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add, size: 18, color: textColor),
+                      onPressed: _increment,
+                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              // 10. ELEVATEDBUTTON WIDGET
+              // Properties: onPressed, style, child
               Expanded(
-                // 10. ELEVATEDBUTTON WIDGET
-                // Properties: onPressed, style, child
                 child: ElevatedButton(
                   onPressed: () {
-                    onAddToCart();
+                    for (int i = 0; i < _quantity; i++) {
+                      widget.onAddToCart();
+                    }
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Added "${product.name}" to cart'),
-                        backgroundColor: isDark ? const Color(0xFF1E212A) : const Color(0xFF0F172A),
+                        duration: const Duration(seconds: 2),
+                        backgroundColor: isDark ? const Color(0xFF282C38) : const Color(0xFF0F172A),
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        content: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle_rounded,
+                              color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF4ADE80),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Added $_quantity × "${product.name}" to cart',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -263,12 +367,12 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.shopping_bag_outlined, size: 18),
-                      SizedBox(width: 8),
+                    children: [
+                      const Icon(Icons.shopping_bag_outlined, size: 18),
+                      const SizedBox(width: 8),
                       Text(
-                        'Add to Cart',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        'Add to Cart • \$${totalPrice.toStringAsFixed(0)}',
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

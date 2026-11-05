@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/cart_item.dart';
+import '../models/order_record.dart';
 import '../widgets/clay_container.dart';
 import 'checkout_screen.dart';
 
@@ -9,6 +10,8 @@ class CartScreen extends StatelessWidget {
   final Function(CartItem) onDecrement;
   final Function(CartItem) onRemove;
   final VoidCallback onClearCart;
+  final VoidCallback? onExploreWarehouse;
+  final Function(OrderRecord)? onOrderPlaced;
 
   const CartScreen({
     super.key,
@@ -17,6 +20,8 @@ class CartScreen extends StatelessWidget {
     required this.onDecrement,
     required this.onRemove,
     required this.onClearCart,
+    this.onExploreWarehouse,
+    this.onOrderPlaced,
   });
 
   double get subtotal => cartItems.fold(0.0, (sum, item) => sum + item.totalPrice);
@@ -62,56 +67,83 @@ class CartScreen extends StatelessWidget {
           ? Center(
               // 3. COLUMN WIDGET
               // Properties: mainAxisAlignment, crossAxisAlignment, children
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 4. CONTAINER WIDGET
-                  ClayContainer(
-                    borderRadius: 30,
-                    surfaceColor: cardBg,
-                    padding: const EdgeInsets.all(26),
-                    child: Icon(
-                      // 5. ICONS WIDGET
-                      Icons.shopping_bag_outlined,
-                      size: 56,
-                      color: mutedColor,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  // 6. TEXT WIDGET
-                  // Properties: data, style
-                  Text(
-                    'Your Cart is Empty',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: textColor,
-                      letterSpacing: -0.4,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Browse warehouse inventory and add components to order.',
-                    style: TextStyle(color: mutedColor, fontSize: 13),
-                  ),
-                  const SizedBox(height: 20),
-                  // 7. PLACEHOLDER WIDGET
-                  // Properties: fallbackHeight, fallbackWidth, color, strokeWidth
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: SizedBox(
-                      width: 120,
-                      height: 45,
-                      child: Placeholder(
-                        fallbackHeight: 45,
-                        fallbackWidth: 120,
-                        color: isDark ? const Color(0xFF282C38) : const Color(0xFFE2E8F0),
-                        strokeWidth: 1.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 4. CONTAINER WIDGET
+                    ClayContainer(
+                      borderRadius: 32,
+                      surfaceColor: cardBg,
+                      padding: const EdgeInsets.all(28),
+                      child: Icon(
+                        // 5. ICONS WIDGET
+                        Icons.shopping_bag_outlined,
+                        size: 60,
+                        color: mutedColor,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    // 6. TEXT WIDGET
+                    // Properties: data, style
+                    Text(
+                      'Your Cart is Empty',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: textColor,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Browse authentic warehouse inventory and add components to order.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: mutedColor, fontSize: 13, height: 1.4),
+                    ),
+                    const SizedBox(height: 20),
+                    // Actionable CTA for empty state
+                    if (onExploreWarehouse != null)
+                      ElevatedButton(
+                        onPressed: onExploreWarehouse,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F172A),
+                          foregroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text('Explore Warehouse Deals', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 16),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 20),
+                    // 7. PLACEHOLDER WIDGET
+                    // Properties: fallbackHeight, fallbackWidth, color, strokeWidth
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: SizedBox(
+                        width: 120,
+                        height: 40,
+                        child: Placeholder(
+                          fallbackHeight: 40,
+                          fallbackWidth: 120,
+                          color: isDark ? const Color(0xFF282C38) : const Color(0xFFE2E8F0),
+                          strokeWidth: 1.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : ListView.builder(
@@ -261,7 +293,10 @@ class CartScreen extends StatelessWidget {
                             builder: (context) => CheckoutScreen(
                               cartItems: cartItems,
                               totalAmount: subtotal,
-                              onOrderCompleted: onClearCart,
+                              onOrderPlaced: (order) {
+                                onClearCart();
+                                onOrderPlaced?.call(order);
+                              },
                             ),
                           ),
                         );
@@ -297,15 +332,19 @@ class CartScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF282C38) : const Color(0xFFF1F5F9),
-          borderRadius: BorderRadius.circular(10),
+        padding: const EdgeInsets.all(6),
+        child: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF282C38) : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 16, color: textColor),
         ),
-        child: Icon(icon, size: 16, color: textColor),
       ),
     );
   }

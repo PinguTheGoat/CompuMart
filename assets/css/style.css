@@ -1,3 +1,23 @@
+:root {
+    --bg-primary: #F0F2F5;
+    --card-surface: #FFFFFF;
+    --text-primary: #0F172A;
+    --text-muted: #64748B;
+    --accent-mint: #2DD4BF;
+    --accent-sky: #38BDF8;
+    --clay-shadow-ambient: rgba(15, 23, 42, 0.08);
+    --clay-shadow-highlight: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #111318;
+    --card-surface: #1E212A;
+    --text-primary: #FFFFFF;
+    --text-muted: #94A3B8;
+    --clay-shadow-ambient: rgba(0, 0, 0, 0.55);
+    --clay-shadow-highlight: rgba(255, 255, 255, 0.05);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,7 +29,9 @@ html {
 }
 
 body {
-    font-family: "Poppins", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Poppins", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .navbar-wrapper {
