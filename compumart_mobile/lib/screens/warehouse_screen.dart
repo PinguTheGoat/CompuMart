@@ -111,32 +111,48 @@ class _WarehouseScreenState extends State<WarehouseScreen> {
               borderRadius: 20,
               surfaceColor: cardBg,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-              child: TextField(
-                controller: searchController,
-                onChanged: (val) {
-                  setState(() {
-                    searchQuery = val;
-                  });
-                },
-                style: TextStyle(color: textColor, fontSize: 13),
-                decoration: InputDecoration(
-                  hintText: 'Search processors, graphics, memory...',
-                  hintStyle: TextStyle(color: mutedColor, fontSize: 13),
-                  // 5. ICONS WIDGET
-                  prefixIcon: Icon(Icons.search_rounded, color: mutedColor, size: 20),
-                  suffixIcon: searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear, size: 16, color: mutedColor),
-                          onPressed: () {
-                            searchController.clear();
-                            setState(() {
-                              searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  border: InputBorder.none,
-                ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_rounded, color: mutedColor, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      textAlignVertical: TextAlignVertical.center,
+                      onChanged: (val) {
+                        setState(() {
+                          searchQuery = val;
+                        });
+                      },
+                      style: TextStyle(color: textColor, fontSize: 13),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: 'Search processors, graphics, memory...',
+                        hintStyle: TextStyle(
+                          color: mutedColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 13),
+                      ),
+                    ),
+                  ),
+                  if (searchQuery.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        searchController.clear();
+                        setState(() {
+                          searchQuery = '';
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: Icon(Icons.clear, size: 16, color: mutedColor),
+                      ),
+                    ),
+                ],
               ),
             ),
 
